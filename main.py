@@ -225,11 +225,13 @@ class Tieba(object):
             picdata = self.session.get("https://passport.baidu.com/cgi-bin/genimage?" + codeString).content
             with open('verifycode.png', 'wb') as codeWriter:
                 codeWriter.write(picdata)
-                codeWriter.close()
             print("Waiting verifycode recognition...")
-            verfyCode = dmt.decode(picdata, 60)
-            print("Verifycode recognition result：", verfyCode)
-            print("Balance：", dmt.getBalance())
+            if dmt != None:
+                verfyCode = dmt.decode(picdata, 60)
+                print("Verifycode recognition result：", verfyCode)
+                print("Balance：", dmt.getBalance())
+            else:
+                verfyCode = input("Input verifycode:")
             res = self._post(username, en, token, gid, keys, codeString, verfyCode)
         else:
             pass
@@ -269,6 +271,7 @@ class Tieba(object):
             print("Failed to sign, reason:", data['error'])
 
 
-dmt = DamatuApi("test", "test")
-user = Tieba("username", "password")
+dmt = None
+#dmt = DamatuApi("username", "password")
+user = Tieba("user", "password")
 user.sign("kingdomrush")
