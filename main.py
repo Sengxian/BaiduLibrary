@@ -100,6 +100,7 @@ def _rsa_encrypt(pubkey, password):
 class Tieba(object):
     def __init__(self, username, password):
         self.base_url = 'https://www.baidu.com'
+        self.username = username
         self.session = requests.Session()
         self.session.headers["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36"
 
@@ -122,7 +123,7 @@ class Tieba(object):
 
     def _check_login(self):
         res = self.session.get(self.base_url)
-        if re.search(u'个人中心', res.text):
+        if re.search("'login':'1'", res.text):
             return True
         return False
 
@@ -240,6 +241,7 @@ class Tieba(object):
                 json.dump(self.session.cookies.get_dict(), f)
             print('Login successful!')
 
+
     def _get_tbs(self, url):
         tbs_pattern = re.compile("(?<='tbs': \").+?(?=\")")
         match = tbs_pattern.search(self.session.get(url).content.decode('utf-8'))
@@ -270,8 +272,18 @@ class Tieba(object):
         else:
             print("Failed to sign, reason:", data['error'])
 
+    def get_likes(self):
+        likes_url = "http://tieba.baidu.com/f/like/mylike"
+        res = self.session.get(likes_url)
+        last = re.search("(?<=pn=)\d+(?=\">尾页</a>)", res.text).group(0)
+        likes_tieba = []
+        for i in range(1,int(last) + 1):
+            res = self.session.get(likes_url + '?&pn=' + str(i))
+            likes_tieba += re.compile('(?<=title=")(?P<n>.+?)">(?P=n)').findall(res.text)
+        return likes_tieba
+
 
 dmt = None
 #dmt = DamatuApi("username", "password")
 user = Tieba("user", "password")
-user.sign("kingdomrush")
+print(user.get_likes())
