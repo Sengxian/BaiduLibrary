@@ -21,6 +21,14 @@ dmt = DamatuApi("username", "password")
 
 This way the program will upload the verify code to Dama2 and try log in.
 
+Or you can't switch to enter verify code manually, just leave `dmt = Node`
+
+```Python
+dmt = None
+```
+
+So when a verify code is needed, the program will save the captcha in `verifycode.png`, and you will be prompted to enter the verify code.
+
 ## Operations
 
 Once you're log-in, you can do such things
