@@ -21,10 +21,23 @@ dmt = DamatuApi("username", "password")
 
 This way the program will upload the verify code to Dama2 and try log in.
 
-When you're log-in, you can sign to a specific tieba
+## Operations
+
+Once you're log-in, you can do such things
+
+### Sign
+
+Sign to a specific Tieba.
 
 ```python
 user.sign("kingdomrush")
+```
+
+### Get likes
+
+Get all Tiebas that User's likes
+```
+user.get_likes()
 ```
 
 And more operations is on the way……
