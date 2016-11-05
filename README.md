@@ -19,9 +19,9 @@ First it will check cookies in `cookies.json`(`{"BDUSS": "xxxx"}`), if it's stil
 dmt = DamatuApi("username", "password")
 ```
 
-This way the program will upload the verify code to Dama2 and try log in.
+This way the program will upload the verify code to Dama2 and try to log in.
 
-Or you can't switch to enter verify code manually, just leave `dmt = Node`
+Or you can switch to enter verify code manually, just leave `dmt = Node`
 
 ```Python
 dmt = None
