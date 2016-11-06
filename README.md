@@ -48,7 +48,7 @@ Get all Tiebas that User's likes
 user.get_likes()
 ```
 
-### Reply to post
+### Reply to
 
 Reply to a specific post.
 ```python
