@@ -19,12 +19,33 @@ First it will check cookies in `cookies.json`(`{"BDUSS": "xxxx"}`), if it's stil
 dmt = DamatuApi("username", "password")
 ```
 
-This way the program will upload the verify code to Dama2 and try log in.
+This way the program will upload the verify code to Dama2 and try to log in.
 
-When you're log-in, you can sign to a specific tieba
+Or you can switch to enter verify code manually, just leave `dmt = Node`
+
+```Python
+dmt = None
+```
+
+So when a verify code is needed, the program will save the captcha in `verifycode.png`, and you will be prompted to enter the verify code.
+
+## Operations
+
+Once you're log-in, you can do such things
+
+### Sign
+
+Sign to a specific Tieba.
 
 ```python
 user.sign("kingdomrush")
+```
+
+### Get likes
+
+Get all Tiebas that User's likes
+```
+user.get_likes()
 ```
 
 And more operations is on the way……
