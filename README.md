@@ -52,11 +52,11 @@ user.get_likes()
 
 Reply to a specific post.
 ```python
-user.user.reply_post('3986970534', "test")
+user.reply_post('3986970534', "test")
 ```
 You can also use the statement below
 ```python
-user.user.reply_post('http://tieba.baidu.com/p/3986970534', "test")
+user.reply_post('http://tieba.baidu.com/p/3986970534', "test")
 ```
 
 And more operations is on the way……
