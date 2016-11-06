@@ -109,7 +109,7 @@ class Tieba(object):
         except IOError as e:
             print(e)
 
-        if self._check_login():
+        if self._check_login() or self._check_login():
             print('Read Cookies for cache...')
         else:
             self.session.cookies.clear()
@@ -250,6 +250,7 @@ class Tieba(object):
         else:
             return ""
 
+
     def sign(self, tieba_name):
         tieba_url = "http://tieba.baidu.com/f?kw={0}&fr=index".format(tieba_name)
         tbs = self._get_tbs(tieba_url)
@@ -282,8 +283,31 @@ class Tieba(object):
             likes_tieba += re.compile('(?<=title=")(?P<n>.+?)">(?P=n)').findall(res.text)
         return likes_tieba
 
+    def reply_post(self, tid, content):
+        # tid should be a string of numbers
+        url = "http://tieba.baidu.com/p/" + str(tid)
+        res = self.session.get(url)
+        fid = re.search("fid:'(\d+?)'", res.text).group(1)
+        kw = re.search("kw:'(.+?)'", res.text).group(1)
+        res = self.session.post(
+            "http://tieba.baidu.com/f/commit/post/add",
+            data={
+                "ie": "utf-8",
+                "kw": kw,
+                "fid": fid,
+                "tid": tid,
+                "vcode_md5": "",
+                "rich_text": 1,
+                "tbs": re.search('"tbs"  : "(.+?)"', res.text).group(1),
+                "content": urllib.request.quote(content),
+                "__type__": "reply"
+            })
+        print(res.text)
+
+
 
 dmt = None
 #dmt = DamatuApi("username", "password")
-user = Tieba("user", "password")
-print(user.get_likes())
+user = Tieba("user", "pass")
+user.reply_post('3986970534', "test")
+
