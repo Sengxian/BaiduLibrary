@@ -21,7 +21,7 @@ dmt = DamatuApi("username", "password")
 
 This way the program will upload the verify code to Dama2 and try to log in.
 
-Or you can switch to enter verify code manually, just leave `dmt = Node`
+Or you can switch to enter verify code manually, just leave `dmt = None`
 
 ```Python
 dmt = None
@@ -48,16 +48,22 @@ Get all Tiebas that User's likes
 user.get_likes()
 ```
 
-### Reply to
+### Reply
 
 Reply to a specific post.
 ```python
-user.reply_post('3986970534', "test")
+user.reply('3986970534', "test")
 ```
 You can also use the statement below
 ```python
-user.reply_post('http://tieba.baidu.com/p/3986970534', "test")
+user.reply('http://tieba.baidu.com/p/3986970534', "test content")
 ```
 
+### Commit
+
+Commit a theme post to the Tieba.
+```python
+user.commit('vb2012', 'test title', 'test content')
+```
 And more operations is on the way……
 
