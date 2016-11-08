@@ -241,7 +241,6 @@ class Tieba(object):
                 json.dump(self.session.cookies.get_dict(), f)
             print('Login successful!')
 
-
     def _get_tbs(self, url):
         tbs_pattern = re.compile("(?<='tbs': \").+?(?=\")")
         match = tbs_pattern.search(self.session.get(url).content.decode('utf-8'))
@@ -249,7 +248,6 @@ class Tieba(object):
             return match.group(0)
         else:
             return ""
-
 
     def sign(self, tieba_name):
         tieba_url = "http://tieba.baidu.com/f?kw={0}&fr=index".format(tieba_name)
@@ -283,9 +281,14 @@ class Tieba(object):
             likes_tieba += re.compile('(?<=title=")(?P<n>.+?)">(?P=n)').findall(res.text)
         return likes_tieba
 
-    def reply_post(self, tid, content):
-        # tid should be a string of numbers
-        url = "http://tieba.baidu.com/p/" + str(tid)
+    def reply(self, tid, content):
+        if 'p' in str(tid):
+            # tid is an URL
+            url = tid
+            tid = re.search("\d+",url).group(0)
+        else:
+            # tid is a string of numbers
+            url = "http://tieba.baidu.com/p/" + str(tid)
         res = self.session.get(url)
         fid = re.search("fid:'(\d+?)'", res.text).group(1)
         kw = re.search("kw:'(.+?)'", res.text).group(1)
@@ -299,15 +302,34 @@ class Tieba(object):
                 "vcode_md5": "",
                 "rich_text": 1,
                 "tbs": re.search('"tbs"  : "(.+?)"', res.text).group(1),
-                "content": urllib.request.quote(content),
+                "content": content,
                 "__type__": "reply"
             })
+        print(res.text[:40])
+
+    def commit(self, tieba_name, title, content):
+        url = "http://tieba.baidu.com/f?kw=" + tieba_name
+        fid = re.search("fid: (\d+)", self.session.get(url).text).group(1)
+        res = self.session.post(
+            "http://tieba.baidu.com/f/commit/thread/add",
+            data = {
+                "ie": "utf-8",
+                "kw": tieba_name,
+                "fid": fid,
+                "tid": 0,
+                "vcode_md5": "",
+                "rich_text": 1,
+                "floor_num": 0,
+                "tbs": self._get_tbs(url),
+                "content": content,
+                "title": title,
+                "__type__": "thread"
+            })
         print(res.text)
-
-
 
 dmt = None
 #dmt = DamatuApi("username", "password")
 user = Tieba("user", "pass")
-user.reply_post('3986970534', "test")
+#user.reply('http://tieba.baidu.com/p/3986970534', "再来来看看")
+user.commit('vb2012', '测试', '测试')
 
