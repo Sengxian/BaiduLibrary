@@ -257,6 +257,8 @@ class Tieba(object):
             with open(Join(PATH, 'cookie.json'), 'w') as f:
                 json.dump(self.session.cookies.get_dict(), f)
             print('Login successful!')
+        else:
+            print(res.text)
 
     def _get_tbs(self, url):
         tbs_pattern = re.compile("(?<='tbs': \").+?(?=\")")
@@ -344,9 +346,14 @@ class Tieba(object):
             })
         print(res.text)
 
-#dmt = None
-#dmt = DamatuApi("username", "password")
-user = Tieba("username", "password")
-#user.reply('http://tieba.baidu.com/p/3986970534', "再来来看看")
-#user.commit('vb2012', '测试', '测试')
+
+def main():
+    #dmt = None
+    #dmt = DamatuApi("username", "password")
+    user = Tieba("末日V4", "Jzc110110110")
+    #user.reply('http://tieba.baidu.com/p/3986970534', "再来来看看")
+    #user.commit('vb2012', '测试', '测试')
+
+if __name__ == '__main__':
+    main()
 
