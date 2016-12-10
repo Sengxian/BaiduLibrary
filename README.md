@@ -2,7 +2,7 @@ A baidu tieba Library, easy to use and Dama2 connected.
 
 ## Requirments
 
-- python3
+- python3 (requests Lib, rsa Lib)
 - [Dama2 Account](http://dama2.com/)(optional)
 
 ## Getting Started
@@ -17,6 +17,7 @@ First it will check cookies in `cookies.json`(`{"BDUSS": "xxxx"}`), if it's stil
 
 ```Python
 dmt = DamatuApi("username", "password")
+user = Tieba("username", "password", dmt)
 ```
 
 This way the program will upload the verify code to Dama2 and try to log in.
@@ -24,7 +25,7 @@ This way the program will upload the verify code to Dama2 and try to log in.
 Or you can switch to enter verify code manually, just leave `dmt = None`
 
 ```Python
-dmt = None
+user = Tieba("username", "password", None)
 ```
 
 So when a verify code is needed, the program will save the captcha in `verifycode.png`, and you will be prompted to enter the verify code.

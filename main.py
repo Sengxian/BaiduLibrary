@@ -9,6 +9,12 @@ import re
 import hashlib
 import urllib.request
 import urllib
+import os
+import sys
+
+
+PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+Join = os.path.join
 
 def md5str(str):
     m = hashlib.md5(str.encode(encoding="utf-8"))
@@ -98,11 +104,12 @@ def _rsa_encrypt(pubkey, password):
 
 
 class Tieba(object):
-    def __init__(self, username, password):
+    def __init__(self, username, password, dmt=None):
         self.base_url = 'https://www.baidu.com'
         self.username = username
         self.session = requests.Session()
         self.session.headers["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36"
+        self.dmt = dmt
 
         try:
             self._get_cookies()
@@ -117,7 +124,7 @@ class Tieba(object):
             self._login(username, password)
 
     def _get_cookies(self):
-        with open('cookie.json') as f:
+        with open(Join(PATH, 'cookie.json')) as f:
             cookies = json.load(f)
             self.session.cookies.update(cookies)
 
@@ -139,6 +146,18 @@ class Tieba(object):
             else:
                 gid += str[i]
         return gid
+
+    def _get_codeString(self, token):
+        url = 'https://passport.baidu.com/v2/api/?logincheck&token={0}&tpl=mn&apiver=v3' \
+              '&tt={1}&sub_source=leadsetpwd&username={2}&isphone=false&' \
+              'callback=bd__cbs__c2esif'.format(token, int(time.time()), urllib.request.quote(self.username))
+        res = self.session.get(url)
+        regex = re.compile('"codeString"\s*:\s*"(.+?)"')
+        match = re.search(regex, res.text)
+        if match:
+            return match.group(1)
+        else:
+            return None
 
     def _get_token(self, gid):
         url_token = "https://passport.baidu.com/v2/api/?getapi"
@@ -218,26 +237,24 @@ class Tieba(object):
         keys = self._get_pubkey(gid, token)
         en = _rsa_encrypt(keys[0], password)
         res = self._post(username, en, token, gid, keys, "", "")
-        pattern = re.compile("(?<=codeString=).+?(?=&)")
-        match = pattern.search(res.content.decode('utf-8'))
-        if match:
-            codeString = match.group(0)
+        codeString = self._get_codeString(token)
+        if codeString:
             print("Verifycode need:", codeString)
             picdata = self.session.get("https://passport.baidu.com/cgi-bin/genimage?" + codeString).content
-            with open('verifycode.png', 'wb') as codeWriter:
+            with open(Join(PATH, 'verifycode.png'), 'wb') as codeWriter:
                 codeWriter.write(picdata)
             print("Waiting verifycode recognition...")
-            if dmt != None:
-                verfyCode = dmt.decode(picdata, 60)
+            if self.dmt != None:
+                verfyCode = self.dmt.decode(picdata, 60)
                 print("Verifycode recognition result：", verfyCode)
-                print("Balance：", dmt.getBalance())
+                print("Balance：", self.dmt.getBalance())
             else:
                 verfyCode = input("Input verifycode:")
             res = self._post(username, en, token, gid, keys, codeString, verfyCode)
         else:
             pass
         if self._check_login():
-            with open('cookie.json', 'w') as f:
+            with open(Join(PATH, 'cookie.json'), 'w') as f:
                 json.dump(self.session.cookies.get_dict(), f)
             print('Login successful!')
 
@@ -276,7 +293,7 @@ class Tieba(object):
         res = self.session.get(likes_url)
         last = re.search("(?<=pn=)\d+(?=\">尾页</a>)", res.text).group(0)
         likes_tieba = []
-        for i in range(1,int(last) + 1):
+        for i in range(1, int(last) + 1):
             res = self.session.get(likes_url + '?&pn=' + str(i))
             likes_tieba += re.compile('(?<=title=")(?P<n>.+?)">(?P=n)').findall(res.text)
         return likes_tieba
@@ -327,9 +344,9 @@ class Tieba(object):
             })
         print(res.text)
 
-dmt = None
+#dmt = None
 #dmt = DamatuApi("username", "password")
-user = Tieba("user", "pass")
+user = Tieba("username", "password")
 #user.reply('http://tieba.baidu.com/p/3986970534', "再来来看看")
-user.commit('vb2012', '测试', '测试')
+#user.commit('vb2012', '测试', '测试')
 
