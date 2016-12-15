@@ -268,6 +268,16 @@ class Tieba(object):
         else:
             return ""
 
+    def _get_stoken(self):
+        likes_url = "https://passport.baidu.com/v3/login/api/auth/?tpl=tb&jump=&return_type=3&u=http%3A%2F%2Ftieba.baidu.com%2Ff%2Flike%2Fmylike%3Fpn%3D1"
+        res = self.session.get(likes_url, allow_redirects=False)
+        likes_url = res.headers['Location']
+        res = self.session.get(likes_url, allow_redirects=False)
+        stoken = re.search("STOKEN=(.+?);", res.headers['Set-Cookie']).group(1)
+        self.session.cookies["STOKEN"] = stoken
+        return stoken
+
+
     def sign(self, tieba_name):
         tieba_url = "http://tieba.baidu.com/f?kw={0}&fr=index".format(tieba_name)
         tbs = self._get_tbs(tieba_url)
@@ -291,13 +301,14 @@ class Tieba(object):
             print("Failed to sign, reason:", data['error'])
 
     def get_likes(self):
-        likes_url = "http://tieba.baidu.com/f/like/mylike"
-        res = self.session.get(likes_url)
-        last = re.search("(?<=pn=)\d+(?=\">尾页</a>)", res.text).group(0)
+        self._get_stoken()
+        res = self.session.get('http://tieba.baidu.com/f/like/mylike?pn=1', allow_redirects=False)
+        last = re.search("pn=(\d+)\">尾页</a>", res.text).group(1)
+        likes_url = 'http://tieba.baidu.com/f/like/mylike?pn='
         likes_tieba = []
         for i in range(1, int(last) + 1):
-            res = self.session.get(likes_url + '?&pn=' + str(i))
-            likes_tieba += re.compile('(?<=title=")(?P<n>.+?)">(?P=n)').findall(res.text)
+            res = self.session.get(likes_url + str(i))
+            likes_tieba += re.compile('<a href.+?title="(.+?)"').findall(res.text)
         return likes_tieba
 
     def reply(self, tid, content):
@@ -351,6 +362,7 @@ def main():
     #dmt = None
     #dmt = DamatuApi("username", "password")
     user = Tieba("末日V4", "Jzc110110110")
+    print(user.get_likes())
     #user.reply('http://tieba.baidu.com/p/3986970534', "再来来看看")
     #user.commit('vb2012', '测试', '测试')
 
