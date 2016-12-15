@@ -66,5 +66,14 @@ Commit a theme post to the Tieba.
 ```python
 user.commit('vb2012', 'test title', 'test content')
 ```
+
+###Python Console
+ADD SOME descriptions????
+```python
+sys.path.append(r".\BaiduLibrary")
+from main import Tieba
+user = Tieba("username", "password")
+user.sign("steam")
+```
 And more operations is on the way……
 
