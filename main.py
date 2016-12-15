@@ -361,7 +361,7 @@ class Tieba(object):
 def main():
     #dmt = None
     #dmt = DamatuApi("username", "password")
-    user = Tieba("末日V4", "Jzc110110110")
+    user = Tieba("username", "password")
     print(user.get_likes())
     #user.reply('http://tieba.baidu.com/p/3986970534', "再来来看看")
     #user.commit('vb2012', '测试', '测试')
