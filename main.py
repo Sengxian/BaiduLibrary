@@ -308,7 +308,7 @@ class Tieba(object):
         likes_tieba = []
         for i in range(1, int(last) + 1):
             res = self.session.get(likes_url + str(i))
-            likes_tieba += re.compile('<a href.+?title="(.+?)"').findall(res.text)
+            likes_tieba += re.compile('<a href.+?title="(.+?)"').findall(res.text
         return likes_tieba
 
     def reply(self, tid, content):
