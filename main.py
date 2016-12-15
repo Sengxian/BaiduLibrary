@@ -294,7 +294,7 @@ class Tieba(object):
         last = re.search("(?<=pn=)\d+(?=\">尾页</a>)", res.text).group(0)
         likes_tieba = []
         for i in range(1, int(last) + 1):
-            res = self.session.get(likes_url + '?&pn=' + str(i))
+            res = self.session.get(likes_url + '?pn=' + str(i))
             likes_tieba += re.compile('(?<=title=")(?P<n>.+?)">(?P=n)').findall(res.text)
         return likes_tieba
 
